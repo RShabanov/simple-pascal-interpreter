@@ -12,9 +12,16 @@ use literal::Literal;
 pub enum Token {
     Ident(String),
     Keyword(Keyword),
+    
+    // for delimiters like `{}`, `()`, etc.
     OpenDelim(DelimKind),
     CloseDelim(DelimKind),
+
+    // for delimiters like `.`, `;`, `,`, etc.
+    Delim(DelimKind),
+    
     Op(OpKind),
     Literal(Literal),
+    
     Eof
 }
