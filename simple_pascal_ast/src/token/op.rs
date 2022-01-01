@@ -4,7 +4,7 @@ pub enum Fixity {
     None,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum OpKind {
     Plus,    // +
     Minus,   // -

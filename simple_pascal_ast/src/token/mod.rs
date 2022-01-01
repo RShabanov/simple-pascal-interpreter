@@ -8,7 +8,7 @@ use keyword::Keyword;
 use literal::Literal;
 use op::OpKind;
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     Ident(String),
     Keyword(Keyword),
