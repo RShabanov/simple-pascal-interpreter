@@ -1,27 +1,27 @@
-pub mod keyword;
 pub mod delim;
-pub mod op;
+pub mod keyword;
 pub mod literal;
+pub mod op;
 
-use keyword::Keyword;
 use delim::DelimKind;
-use op::OpKind;
+use keyword::Keyword;
 use literal::Literal;
+use op::OpKind;
 
 #[derive(Clone)]
 pub enum Token {
     Ident(String),
     Keyword(Keyword),
-    
+
     // for delimiters like `{}`, `()`, etc.
     OpenDelim(DelimKind),
     CloseDelim(DelimKind),
 
     // for delimiters like `.`, `;`, `,`, etc.
     Delim(DelimKind),
-    
+
     Op(OpKind),
     Literal(Literal),
-    
-    Eof
+
+    Eof,
 }

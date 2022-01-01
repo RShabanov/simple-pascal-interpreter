@@ -6,14 +6,14 @@ pub enum Fixity {
 
 #[derive(Clone)]
 pub enum OpKind {
-    Plus,       // +
-    Minus,      // -
-    Star,       // *
-    Slash,      // /
-    Caret,      // ^
-    Percent,    // %
+    Plus,    // +
+    Minus,   // -
+    Star,    // *
+    Slash,   // /
+    Caret,   // ^
+    Percent, // %
 
-    AssignEq,   // :=
+    AssignEq, // :=
 }
 
 impl OpKind {
@@ -23,7 +23,7 @@ impl OpKind {
         match self {
             AssignEq => Fixity::Right,
             Plus | Minus | Star | Slash | Caret | Percent => Fixity::Left,
-            _ => Fixity::None
+            _ => Fixity::None,
         }
     }
 }

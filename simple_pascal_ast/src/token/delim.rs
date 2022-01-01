@@ -1,8 +1,8 @@
 #[derive(Clone)]
 pub enum DelimKind {
-    Paren,      // ()
-    
+    Paren, // ()
+
     // these kinds don't have close ones
     Dot,
-    Semicolon
+    Semicolon,
 }
