@@ -14,17 +14,17 @@ pub fn parse_delim(delim: char) -> Option<DelimKind> {
         '(' | ')' => Some(Paren),
         '.' => Some(Dot),
         ';' => Some(Semicolon),
-        _ => None
+        _ => None,
     }
 }
 
 impl DelimKind {
     pub fn is_bin_kind(&self) -> bool {
         use DelimKind::*;
-        
+
         match self {
             &Paren => true,
-            _ => false
+            _ => false,
         }
     }
 }
