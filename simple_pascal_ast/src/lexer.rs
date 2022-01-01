@@ -102,8 +102,12 @@ impl Lexer<'_> {
             '^' => Some(Caret),
             ':' => {
                 self.current_char.next();
-                match self.current_char.next_if_eq(&'=') {
-                    Some(_) => return Some(AssignEq),
+                match self.current_char.peek() {
+                    Some(ch) => {
+                        return if ch == &'=' {
+                            Some(AssignEq)
+                        } else { None }
+                    },
                     None => return None,
                 }
             }
@@ -138,12 +142,12 @@ mod tests {
     fn exprs_and_tokens() -> (Vec<&'static str>, Vec<Vec<Token>>) {
         (
             vec![
-                "4 + 3",
+                "4 +3",
                 "BEGIN\nEND.",
                 "223 +      5.3",
                 "2 + (2 - 4)*2.3",
                 "2; 4 + 3;",
-                "a := 3;",
+                "a :=3;",
                 "",
             ],
             vec![
