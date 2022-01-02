@@ -48,36 +48,31 @@ impl Parser<'_> {
         let node_list = self.complex_statement()?;
 
         self.next_token()?;
-        if let Token::Delim(delim) = self.current_token.clone() {
-            if delim != DelimKind::Dot {
-                return Err(ParserErr::MissingToken(
-                    format!("Program must end up with a dot, got {:?}", delim)
-                ));
-            } else {
-                self.next_token()?;
-            }
+
+        if self.current_token != Token::Delim(DelimKind::Dot) {
+            return Err(ParserErr::MissingToken(
+                format!("Program must end up with a dot, got {:?}", self.current_token)
+            ));
+        } else {
+            self.next_token()?;
         }
 
         Ok(node_list)
     }
 
-    fn complex_statement(&mut self) -> Result<Node, ParserErr> {        
-        if let Token::Keyword(keyword) = self.current_token.clone() {
-            if keyword != Keyword::Begin {
-                return Err(ParserErr::MissingToken(
-                    format!("Expected keyword `BEGIN`, got {:?}", keyword)
-                ));
-            }
+    fn complex_statement(&mut self) -> Result<Node, ParserErr> {
+        if self.current_token != Token::Keyword(Keyword::Begin) {
+            return Err(ParserErr::MissingToken(
+                format!("Expected keyword `BEGIN`, got {:?}", self.current_token)
+            ));
         }
 
         let node_list = self.statement_list()?;
 
-        if let Token::Keyword(keyword) = self.current_token.clone() {
-            if keyword != Keyword::End {
-                return Err(ParserErr::MissingToken(
-                    format!("Expected keyword `END`, got {:?}", keyword)
-                ));
-            }
+        if self.current_token != Token::Keyword(Keyword::End) {
+            return Err(ParserErr::MissingToken(
+                format!("Expected keyword `END`, got {:?}", self.current_token)
+            ));
         }
 
         Ok(node_list)
@@ -86,10 +81,7 @@ impl Parser<'_> {
     fn statement_list(&mut self) -> Result<Node, ParserErr> {
         let mut nodes = NodeList::from([self.statement()?]);
 
-        while let Token::Delim(delim) = self.current_token.clone() {
-            if delim != DelimKind::Semicolon {
-                break;
-            }
+        while self.current_token == Token::Delim(DelimKind::Semicolon) {
             nodes.push_back(self.statement()?);
         }
 
@@ -127,7 +119,16 @@ impl Parser<'_> {
                 ))
             },
             _ => {
-                self.expr()
+                let mut node = self.expr()?;
+
+                while node == Node::Delim(DelimKind::Semicolon) {
+                    node = self.expr()?;
+                }
+
+                match node {
+                    Node::Keyword(_) | Node::Delim(_) | Node::Compound(_) => Err(ParserErr::InvalidExpr),
+                    _ => Ok(node)
+                }
             }
         }
     }
@@ -231,7 +232,13 @@ impl Parser<'_> {
     fn unary_op_factor(&mut self, op: OpKind) -> Result<Node, ParserErr> {
         match op {
             OpKind::Plus | OpKind::Minus => {
-                Ok(UnaryOp::new(op, self.factor()?))
+                let node = self.factor()?;
+
+                match node {
+                    Node::Keyword(_) | Node::Delim(_) | Node::Compound(_) | Node::None => Err(ParserErr::InvalidExpr),
+                    _ => Ok(UnaryOp::new(op, node))
+                }
+                
             },
             _ => Err(ParserErr::TokenMismatch(
                 format!("Unary operator supports only `+` and `-`, got {:?}", op)
