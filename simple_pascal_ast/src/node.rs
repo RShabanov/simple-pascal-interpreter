@@ -16,7 +16,7 @@ pub enum Node {
 
 pub type NodeList = LinkedList<Node>;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct CompoundNode {
     pub children: NodeList
 }
@@ -50,6 +50,16 @@ impl UnaryOp {
             op,
             node: Box::new(node),
         })
+    }
+}
+
+impl CompoundNode {
+    pub fn new() -> Node {
+        Node::Compound(Default::default())
+    }
+
+    pub fn from_list(children: NodeList) -> Node {
+        Node::Compound(Self { children })
     }
 }
 
