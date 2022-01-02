@@ -27,6 +27,7 @@ pub struct Parser<'a> {
 impl<'a> Parser<'a> {
     pub fn parse(&mut self, text: &'a str) -> Result<Node, ParserErr> {
         self.lexer.set(text);
+        self.next_token()?;
 
         let ast = self.program()?;
 
@@ -60,9 +61,7 @@ impl Parser<'_> {
         Ok(node_list)
     }
 
-    fn complex_statement(&mut self) -> Result<Node, ParserErr> {
-        self.next_token()?;
-        
+    fn complex_statement(&mut self) -> Result<Node, ParserErr> {        
         if let Token::Keyword(keyword) = self.current_token.clone() {
             if keyword != Keyword::Begin {
                 return Err(ParserErr::MissingToken(
@@ -94,11 +93,7 @@ impl Parser<'_> {
             nodes.push_back(self.statement()?);
         }
 
-        Ok(Node::Compound(
-            CompoundNode {
-                children: nodes
-            }
-        ))
+        Ok(CompoundNode::from_list(nodes))
     }
 
     fn statement(&mut self) -> Result<Node, ParserErr> {
@@ -107,7 +102,9 @@ impl Parser<'_> {
         match self.current_token.clone() {
             Token::Keyword(keyword) => {
                 if keyword == Keyword::Begin {
-                    self.complex_statement()
+                    let statement = self.complex_statement();
+                    self.next_token()?;
+                    statement
                 } else {
                     // since there are only 2 keywords: BEGIN and END
                     Ok(Node::None)
