@@ -187,3 +187,25 @@ fn miss_delimiter() {
     END
     ").unwrap();
 }
+
+#[test]
+#[should_panic]
+fn miss_delimiter_end() {
+    let mut parser = Parser::new();
+    parser.parse(r"
+    BEGIN
+        BEGIN
+        END
+        x := 1;
+    END.").unwrap();
+}
+
+#[test]
+#[should_panic]
+fn invalid_assignment() {
+    let mut parser = Parser::new();
+    parser.parse(r"
+    BEGIN
+        2 := 2;
+    END.").unwrap();
+}
