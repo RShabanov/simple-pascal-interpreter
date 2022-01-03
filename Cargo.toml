@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 simple_pascal_ast = { path = "./simple_pascal_ast" }
+simple_pascal_interpreter = { path = "./simple_pascal_interpreter" }
