@@ -24,6 +24,23 @@ fn exprs_and_vars() -> (Vec<&'static str>, Vec<LinkedList<HashMap<String, f64>>>
                     c := a - b
                 END;
                 x := 11;
+            END.",
+            r"BEGIN
+                z := 3;
+                ;y :=5;
+                ;;;
+                BEGIN
+                    c := 2;
+                    BEGIN
+                        z := c;
+                    END;
+                    z := y;
+                END;
+                BEGIN
+                    a := 4;
+                    y := a + z;
+                END;
+                ;4 - y;
             END."
         ],
         vec![
@@ -48,6 +65,19 @@ fn exprs_and_vars() -> (Vec<&'static str>, Vec<LinkedList<HashMap<String, f64>>>
                 HashMap::from([
                     (String::from("x"), 11.0),
                     (String::from("y"), 2.0)
+                ])
+            ]),
+            LinkedList::from([
+                HashMap::default(),
+                HashMap::from([
+                    (String::from("c"), 2.0),
+                ]),
+                HashMap::from([
+                    (String::from("a"), 4.0)
+                ]),
+                HashMap::from([
+                    (String::from("z"), 5.0),
+                    (String::from("y"), 9.0)
                 ])
             ])
         ]

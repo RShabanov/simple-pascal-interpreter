@@ -24,6 +24,23 @@ fn exprs_and_trees() -> (Vec<&'static str>, Vec<Node>) {
                 c := a - b
             END;
             x := 11;
+        END.",
+        r"BEGIN
+            z := 3;
+            ;y :=5;
+            ;;;
+            BEGIN
+                c := 2;
+                BEGIN
+                    z := c;
+                END;
+                z := y;
+            END;
+            BEGIN
+                a := 4;
+                y := a + z;
+            END;
+            ;4 - y;
         END."
     ],
     vec![
@@ -32,6 +49,7 @@ fn exprs_and_trees() -> (Vec<&'static str>, Vec<Node>) {
         ),
         CompoundNode::from_list(
             NodeList::from([
+                Node::None,
                 UnaryOp::new(
                     OpKind::Minus,
                     Node::Literal(Literal::Integer(String::from("2")))
@@ -149,6 +167,75 @@ fn exprs_and_trees() -> (Vec<&'static str>, Vec<Node>) {
                     Node::Ident(String::from("x")),
                     OpKind::AssignEq,
                     Node::Literal(Literal::Integer(String::from("11")))
+                ),
+                Node::None
+            ])
+        ),
+        CompoundNode::from_list(
+            NodeList::from([
+                BinOp::new(
+                    Node::Ident(String::from("z")),
+                    OpKind::AssignEq,
+                    Node::Literal(Literal::Integer(String::from("3")))
+                ),
+                Node::None,
+                BinOp::new(
+                    Node::Ident(String::from("y")),
+                    OpKind::AssignEq,
+                    Node::Literal(Literal::Integer(String::from("5")))
+                ),
+                Node::None,
+                Node::None,
+                Node::None,
+                CompoundNode::from_list(
+                    NodeList::from([
+                        BinOp::new(
+                            Node::Ident(String::from("c")),
+                            OpKind::AssignEq,
+                            Node::Literal(Literal::Integer(String::from("2")))
+                        ),
+                        CompoundNode::from_list(
+                            NodeList::from([
+                                BinOp::new(
+                                    Node::Ident(String::from("z")),
+                                    OpKind::AssignEq,
+                                    Node::Ident(String::from("c"))
+                                ),
+                                Node::None,
+                            ])
+                        ),
+                        BinOp::new(
+                            Node::Ident(String::from("z")),
+                            OpKind::AssignEq,
+                            Node::Ident(String::from("y"))
+                        ),
+                        Node::None
+                    ])
+                ),
+                CompoundNode::from_list(
+                    NodeList::from([
+                        BinOp::new(
+                            Node::Ident(String::from("a")),
+                            OpKind::AssignEq,
+                            Node::Literal(Literal::Integer(String::from("4")))
+                        ),
+                        BinOp::new(
+                            Node::Ident(String::from("y")),
+                            OpKind::AssignEq,
+                            BinOp::new(
+                                Node::Ident(String::from("a")),
+                                OpKind::Plus,
+                                Node::Ident(String::from("z"))
+                            ),
+                        ),
+                        Node::None
+                    ])
+                ),
+                Node::None,
+                BinOp::new(
+                    Node::Literal(Literal::Integer(String::from("4"))),
+                    OpKind::Minus,
+                    Node::Ident(String::from("y"))
                 ),
                 Node::None
             ])

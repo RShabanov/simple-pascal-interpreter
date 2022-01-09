@@ -118,6 +118,9 @@ impl Parser<'_> {
                     self.expr()?
                 ))
             },
+            Token::Delim(_) => {
+                Ok(Node::None)
+            },
             _ => {
                 let mut node = self.expr()?;
 
